@@ -1,10 +1,17 @@
-.venv
-__pycache__
-outputs
-*.log
-poetry.lock
-
 .DS_Store
-.ruff_cache
 
-sftp.json
+.vscode
+.venv
+build
+poetry.lock
+uv.lock
+
+__pycache__
+.ruff_cache
+.mypy_cache
+
+
+outputs
+
+*.log
+*.so
