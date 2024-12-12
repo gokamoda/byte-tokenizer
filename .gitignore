@@ -9,6 +9,7 @@ uv.lock
 __pycache__
 .ruff_cache
 .mypy_cache
+.pytest_cache
 
 
 outputs
