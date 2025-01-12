@@ -155,11 +155,6 @@ class ByteLMTokenizerV1(ByteTokenizer):
 
 
 class ByteLMTokenizerV2(ByteTokenizer):
-    b4_head = 0b11100000
-    b3_head = 0b11000000
-    b2_head = 0b10000000
-    b1_head = 0b00000000
-
     def __init__(self, force_four_bytes=False):
         super().__init__("ByteLMV2")
 
