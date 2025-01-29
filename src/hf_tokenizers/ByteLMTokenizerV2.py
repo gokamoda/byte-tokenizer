@@ -76,12 +76,12 @@ class ByteLMTokenizerV2(PreTrainedTokenizer):
     def __init__(
         self,
         patch_padding=False,
-        bos_token="<s>",
-        eos_token="</s>",
-        pad_token="<pad>",
-        cls_token="<cls>",
-        sep_token="<sep>",
-        mask_token="<mask>",
+        pad_token: tuple= (0, "<pad>"),
+        eos_token: tuple =(1, "</s>"),
+        bos_token: tuple =(2, "<s>"),
+        cls_token: tuple= (3, "<cls>"),
+        sep_token: tuple= (4, "<sep>"),
+        mask_token: tuple= (5, "<mask>"),
         **kwargs,
     ) -> None:
         assert np.all(
@@ -104,54 +104,54 @@ class ByteLMTokenizerV2(PreTrainedTokenizer):
         # list up all reserve tokens
         self._list_up_reserve_tokens()
 
-        bos_token = (
-            AddedToken(bos_token, lstrip=False, rstrip=False)
-            if isinstance(bos_token, str)
-            else bos_token
+        _bos_token = (
+            AddedToken(bos_token[1], lstrip=False, rstrip=False)
+            if isinstance(bos_token[1], str)
+            else bos_token[1]
         )
-        eos_token = (
-            AddedToken(eos_token, lstrip=False, rstrip=False)
-            if isinstance(eos_token, str)
-            else eos_token
+        _eos_token = (
+            AddedToken(eos_token[1], lstrip=False, rstrip=False)
+            if isinstance(eos_token[1], str)
+            else eos_token[1]
         )
-        pad_token = (
-            AddedToken(pad_token, lstrip=False, rstrip=False)
-            if isinstance(pad_token, str)
-            else pad_token
+        _pad_token = (
+            AddedToken(pad_token[1], lstrip=False, rstrip=False)
+            if isinstance(pad_token[1], str)
+            else pad_token[1]
         )
-        cls_token = (
-            AddedToken(cls_token, lstrip=False, rstrip=False)
-            if isinstance(cls_token, str)
+        _cls_token = (
+            AddedToken(cls_token[1], lstrip=False, rstrip=False)
+            if isinstance(cls_token[1], str)
             else cls_token
         )
-        sep_token = (
-            AddedToken(sep_token, lstrip=False, rstrip=False)
-            if isinstance(sep_token, str)
-            else sep_token
+        _sep_token = (
+            AddedToken(sep_token[1], lstrip=False, rstrip=False)
+            if isinstance(sep_token[1], str)
+            else sep_token[1]
         )
-        mask_token = (
-            AddedToken(mask_token, lstrip=False, rstrip=False)
-            if isinstance(mask_token, str)
-            else mask_token
+        _mask_token = (
+            AddedToken(mask_token[1], lstrip=False, rstrip=False)
+            if isinstance(mask_token[1], str)
+            else mask_token[1]
         )
 
         self.offset = 0
 
         self._added_tokens_decoder = {
-            self.reserve_token_list[0]: pad_token,
-            self.reserve_token_list[1]: eos_token,
-            self.reserve_token_list[2]: bos_token,
-            self.reserve_token_list[3]: cls_token,
-            self.reserve_token_list[4]: sep_token,
-            self.reserve_token_list[5]: mask_token,
+            self.reserve_token_list[pad_token[0]]: _pad_token,
+            self.reserve_token_list[eos_token[0]]: _eos_token,
+            self.reserve_token_list[bos_token[0]]: _bos_token,
+            self.reserve_token_list[cls_token[0]]: _cls_token,
+            self.reserve_token_list[sep_token[0]]: _sep_token,
+            self.reserve_token_list[mask_token[0]]: _mask_token,
         }
         super().__init__(
-            bos_token=bos_token,
-            eos_token=eos_token,
-            pad_token=pad_token,
-            cls_token=cls_token,
-            sep_token=sep_token,
-            mask_token=mask_token,
+            bos_token=_bos_token,
+            eos_token=_eos_token,
+            pad_token=_pad_token,
+            cls_token=_cls_token,
+            sep_token=_sep_token,
+            mask_token=_mask_token,
             extra_ids=0,
             **kwargs,
         )
@@ -620,8 +620,14 @@ class ByteLMTokenizerV2(PreTrainedTokenizer):
 
 
 if __name__ == "__main__":
-    tokenizer = ByteLMTokenizerV2(patch_padding=True, padding_side="left")
+    tokenizer = ByteLMTokenizerV2(patch_padding=True, padding_side="left",
+        pad_token=(0, "<pad>"),
+        bos_token=(73, "<s>"),
+        eos_token=(146, "</s>"),
+        mask_token=(219, "<mask>"),
+    )
     prompts = ["a", "aあ", "aあ\U00080000"]
+    print(prompts)
     encoded = tokenizer(prompts, padding="longest")
     print(encoded)
     decoded = tokenizer.batch_decode(encoded["input_ids"])
@@ -630,3 +636,6 @@ if __name__ == "__main__":
         encoded["input_ids"], skip_special_tokens=True
     )
     print(decoded_no_special)
+
+    from IPython import embed
+    embed()
